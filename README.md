@@ -15,7 +15,19 @@ npm install @caviajs/http-cors --save
 <h4>Usage</h4>
 </div>
 
-...
+```typescript
+import { HttpCors } from '@caviajs/http-cors';
+import { Interceptor } from '@caviajs/http-router';
+
+export const HttpCorsInterceptor: Interceptor = HttpCors.setup({ /* ... */ });
+```
+
+```typescript
+// ...
+httpRouter
+  .intercept(HttpCorsInterceptor)
+// ...
+```
 
 <div align="center">
   <sub>Built with ❤︎ by <a href="https://partyka.dev">Paweł Partyka</a></sub>
