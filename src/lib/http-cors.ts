@@ -78,11 +78,6 @@ export class HttpCors {
       if (request.method === 'OPTIONS') {
         // This is a CORS-preflight request - https://fetch.spec.whatwg.org/#cors-preflight-request
 
-        // There are three characteristics of a CORS-preflight request:
-        // - it uses the HTTP OPTIONS method,
-        // - it has an Access-Control-Request-Method header,
-        // - it has an Origin request header.
-
         setAccessControlAllowCredentials(response, options);
         setAccessControlAllowHeaders(request, response, options);
         setAccessControlAllowMethods(response, options);
