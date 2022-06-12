@@ -10,7 +10,7 @@ it('should add CORS-request headers and execute handler (custom config)', async 
     .intercept(HttpCors.setup({
       'Access-Control-Allow-Credentials': true,
       'Access-Control-Allow-Headers': ['X-Foo', 'X-Bar'],
-      'Access-Control-Allow-Methods': ['GET'],
+      'Access-Control-Allow-Methods': ['GET', 'POST'],
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Expose-Headers': ['Y-Foo', 'Y-Bar'],
       'Access-Control-Max-Age': 500,
