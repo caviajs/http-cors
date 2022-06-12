@@ -30,7 +30,7 @@ it('should add CORS-preflight request headers and not execute handler (default c
   expect(response.text).toBe('');
 });
 
-it('should add CORS-preflight request headers and not execute handler (default config) - with reflection', async () => {
+it('should add CORS-preflight request headers and not execute handler (default config) - reflection', async () => {
   const httpRouter: HttpRouter = new HttpRouter();
 
   httpRouter

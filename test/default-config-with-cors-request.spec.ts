@@ -30,7 +30,7 @@ it('should add CORS-request headers and execute handler (default config)', async
   expect(response.text).toBe('Hello GET');
 });
 
-it('should add CORS-request headers and execute handler (default config) - with reflection', async () => {
+it('should add CORS-request headers and execute handler (default config) - reflection', async () => {
   const httpRouter: HttpRouter = new HttpRouter();
 
   httpRouter
