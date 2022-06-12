@@ -75,9 +75,6 @@ export class HttpCors {
     return async (request: http.IncomingMessage, response: http.ServerResponse, next: Next): Promise<Observable<any>> => {
       setVary(response);
 
-      setAccessControlAllowCredentials(response, options);
-      setAccessControlAllowOrigin(response, options);
-
       if (request.method === 'OPTIONS' && request.headers['access-control-request-method'] && request.headers['origin']) {
         // This is a CORS-preflight request - https://fetch.spec.whatwg.org/#cors-preflight-request
 
@@ -86,8 +83,11 @@ export class HttpCors {
         // - it has an Access-Control-Request-Method header,
         // - it has an Origin request header.
 
+        setAccessControlAllowCredentials(response, options);
         setAccessControlAllowHeaders(response, options);
         setAccessControlAllowMethods(response, options);
+        setAccessControlAllowOrigin(response, options);
+        setAccessControlExposeHeaders(response, options);
         setAccessControlMaxAge(response, options);
 
         // A successful HTTP response to a CORS-preflight request is similar,
@@ -98,6 +98,8 @@ export class HttpCors {
       } else {
         // This is a CORS request - https://fetch.spec.whatwg.org/#cors-request
 
+        setAccessControlAllowCredentials(response, options);
+        setAccessControlAllowOrigin(response, options);
         setAccessControlExposeHeaders(response, options);
 
         return next.handle();
