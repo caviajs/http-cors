@@ -1,20 +1,13 @@
 import { HttpRouter } from '@caviajs/http-router';
-import { HttpCors } from '../src';
 import http from 'http';
 import supertest from 'supertest';
+import { HttpCors } from '../src';
 
-it('should add CORS-request headers and execute handler', async () => {
+it('should add CORS-request headers and execute handler (default config)', async () => {
   const httpRouter: HttpRouter = new HttpRouter();
 
   httpRouter
-    .intercept(HttpCors.setup({
-      'Access-Control-Allow-Credentials': true,
-      'Access-Control-Allow-Headers': ['X-Foo'],
-      'Access-Control-Allow-Methods': ['GET'],
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Expose-Headers': ['Y-Foo'],
-      'Access-Control-Max-Age': 500,
-    }))
+    .intercept(HttpCors.setup())
     .route({ handler: () => 'Hello Cavia', method: 'GET', path: '/' });
 
   const httpServer: http.Server = http.createServer((request, response) => {
@@ -25,11 +18,11 @@ it('should add CORS-request headers and execute handler', async () => {
     .get('/')
     .set('Origin', 'https://caviajs.com');
 
-  expect(response.headers['access-control-allow-credentials']).toBe('true'); // CORS-request header
+  expect(response.headers['access-control-allow-credentials']).toBeUndefined(); // CORS-request header
   expect(response.headers['access-control-allow-headers']).toBeUndefined();
   expect(response.headers['access-control-allow-methods']).toBeUndefined();
   expect(response.headers['access-control-allow-origin']).toBe('*'); // CORS-request header
-  expect(response.headers['access-control-expose-headers']).toBe('Y-Foo'); // CORS-request header
+  expect(response.headers['access-control-expose-headers']).toBeUndefined(); // CORS-request header
   expect(response.headers['access-control-max-age']).toBeUndefined();
   expect(response.headers['vary']).toBe('Origin'); // CORS-request header
   expect(response.statusCode).toBe(200);
