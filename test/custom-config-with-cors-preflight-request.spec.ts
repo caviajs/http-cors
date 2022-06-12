@@ -26,9 +26,9 @@ it('should add CORS-preflight request headers and not execute handler (custom co
     // CORS-preflight request
     .options('/')
     .set('Origin', 'https://caviajs.com')
+    .set('Access-Control-Request-Headers', 'Z-Foo, Z-Bar')
     .set('Access-Control-Request-Method', 'PUT');
 
-  // CORS-preflight request headers:
   expect(response.headers['access-control-allow-credentials']).toBe('true');
   expect(response.headers['access-control-allow-headers']).toBe('X-Foo, X-Bar');
   expect(response.headers['access-control-allow-methods']).toBe('GET, POST');

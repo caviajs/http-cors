@@ -2,54 +2,55 @@ import { Interceptor, Next } from '@caviajs/http-router';
 import http from 'http';
 import { Observable, of } from 'rxjs';
 
-const DEFAULT_CORS_OPTIONS: CorsOptions = {
-  'Access-Control-Allow-Methods': ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT'],
-  'Access-Control-Allow-Origin': '*',
-};
-
 function setAccessControlAllowCredentials(response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
-  if (options.hasOwnProperty('Access-Control-Allow-Credentials') && options['Access-Control-Allow-Credentials'] === true) {
+  if (options['Access-Control-Allow-Credentials'] === true) {
     response.setHeader('Access-Control-Allow-Credentials', 'true');
   }
 }
 
-function setAccessControlAllowHeaders(response: http.ServerResponse, options: CorsOptions): void {
+function setAccessControlAllowHeaders(request: http.IncomingMessage, response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Headers
-  if (options.hasOwnProperty('Access-Control-Allow-Headers')) {
+  if (options['Access-Control-Allow-Headers']) {
     response.setHeader('Access-Control-Allow-Headers', options['Access-Control-Allow-Headers'].join(', '));
+  } else if (typeof request.headers['access-control-request-headers'] === 'string') {
+    // reflect headers
+    response.setHeader('Access-Control-Allow-Headers', request.headers['access-control-request-headers']);
   }
 }
 
 function setAccessControlAllowMethods(response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Methods
-  if (options.hasOwnProperty('Access-Control-Allow-Methods')) {
+  if (options['Access-Control-Allow-Methods']) {
     response.setHeader('Access-Control-Allow-Methods', options['Access-Control-Allow-Methods'].join(', '));
   }
 }
 
-function setAccessControlAllowOrigin(response: http.ServerResponse, options: CorsOptions): void {
+function setAccessControlAllowOrigin(request: http.IncomingMessage, response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin
-  if (options.hasOwnProperty('Access-Control-Allow-Origin')) {
+  if (typeof options['Access-Control-Allow-Origin'] === 'string') {
     response.setHeader('Access-Control-Allow-Origin', options['Access-Control-Allow-Origin']);
+  } else if (typeof request.headers['origin'] === 'string') {
+    // reflect origin
+    response.setHeader('Access-Control-Allow-Origin', request.headers['origin']);
   }
 }
 
 function setAccessControlExposeHeaders(response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Expose-Headers
-  if (options.hasOwnProperty('Access-Control-Expose-Headers')) {
+  if (options['Access-Control-Expose-Headers']) {
     response.setHeader('Access-Control-Expose-Headers', options['Access-Control-Expose-Headers'].join(', '));
   }
 }
 
 function setAccessControlMaxAge(response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Max-Age
-  if (options.hasOwnProperty('Access-Control-Max-Age')) {
+  if (options['Access-Control-Max-Age']) {
     response.setHeader('Access-Control-Max-Age', options['Access-Control-Max-Age']);
   }
 }
 
-function setVary(response: http.ServerResponse): void {
+function setVary(response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#cors_and_caching
   let headerValue = response.getHeader('Vary') || [];
@@ -63,6 +64,7 @@ function setVary(response: http.ServerResponse): void {
   }
 
   headerValue.push('Origin');
+  // headerValue.push('Access-Control-Request-Headers');
 
   response.setHeader('Vary', headerValue);
 }
@@ -70,12 +72,10 @@ function setVary(response: http.ServerResponse): void {
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 export class HttpCors {
   public static setup(options: CorsOptions = {}): Interceptor {
-    options = { ...DEFAULT_CORS_OPTIONS, ...options };
-
     return async (request: http.IncomingMessage, response: http.ServerResponse, next: Next): Promise<Observable<any>> => {
-      setVary(response);
+      setVary(response, options);
 
-      if (request.method === 'OPTIONS' && request.headers['access-control-request-method'] && request.headers['origin']) {
+      if (request.method === 'OPTIONS') {
         // This is a CORS-preflight request - https://fetch.spec.whatwg.org/#cors-preflight-request
 
         // There are three characteristics of a CORS-preflight request:
@@ -84,9 +84,9 @@ export class HttpCors {
         // - it has an Origin request header.
 
         setAccessControlAllowCredentials(response, options);
-        setAccessControlAllowHeaders(response, options);
+        setAccessControlAllowHeaders(request, response, options);
         setAccessControlAllowMethods(response, options);
-        setAccessControlAllowOrigin(response, options);
+        setAccessControlAllowOrigin(request, response, options);
         setAccessControlExposeHeaders(response, options);
         setAccessControlMaxAge(response, options);
 
@@ -99,7 +99,7 @@ export class HttpCors {
         // This is a CORS request - https://fetch.spec.whatwg.org/#cors-request
 
         setAccessControlAllowCredentials(response, options);
-        setAccessControlAllowOrigin(response, options);
+        setAccessControlAllowOrigin(request, response, options);
         setAccessControlExposeHeaders(response, options);
 
         return next.handle();
