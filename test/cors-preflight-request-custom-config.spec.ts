@@ -23,6 +23,7 @@ it('should add CORS-preflight request headers and not execute handler (custom co
   });
 
   const response = await supertest(httpServer)
+    // CORS-preflight request
     .options('/')
     .set('Origin', 'https://caviajs.com')
     .set('Access-Control-Request-Method', 'PUT');

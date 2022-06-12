@@ -23,6 +23,7 @@ it('should add CORS-request headers and execute handler (custom config)', async 
   });
 
   const response = await supertest(httpServer)
+    // CORS-request
     .get('/')
     .set('Origin', 'https://caviajs.com');
 
