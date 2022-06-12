@@ -50,9 +50,8 @@ function setAccessControlMaxAge(response: http.ServerResponse, options: CorsOpti
   }
 }
 
-function setVary(response: http.ServerResponse, options: CorsOptions): void {
+function setVary(response: http.ServerResponse): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Vary
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#cors_and_caching
   let headerValue = response.getHeader('Vary') || [];
 
   if (typeof headerValue === 'number') {
@@ -63,8 +62,8 @@ function setVary(response: http.ServerResponse, options: CorsOptions): void {
     headerValue = [headerValue];
   }
 
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin#cors_and_caching
   headerValue.push('Origin');
-  // headerValue.push('Access-Control-Request-Headers');
 
   response.setHeader('Vary', headerValue);
 }
@@ -73,7 +72,7 @@ function setVary(response: http.ServerResponse, options: CorsOptions): void {
 export class HttpCors {
   public static setup(options: CorsOptions = {}): Interceptor {
     return async (request: http.IncomingMessage, response: http.ServerResponse, next: Next): Promise<Observable<any>> => {
-      setVary(response, options);
+      setVary(response);
 
       if (request.method === 'OPTIONS') {
         // This is a CORS-preflight request - https://fetch.spec.whatwg.org/#cors-preflight-request
