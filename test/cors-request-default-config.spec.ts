@@ -8,7 +8,8 @@ it('should add CORS-request headers and execute handler (default config)', async
 
   httpRouter
     .intercept(HttpCors.setup())
-    .route({ handler: () => 'Hello Cavia', method: 'GET', path: '/' });
+    .route({ handler: () => 'Hello GET', method: 'GET', path: '/' })
+    .route({ handler: () => 'Hello OPTIONS', method: 'OPTIONS', path: '/' });
 
   const httpServer: http.Server = http.createServer((request, response) => {
     httpRouter.handle(request, response);
@@ -26,5 +27,5 @@ it('should add CORS-request headers and execute handler (default config)', async
   expect(response.headers['access-control-max-age']).toBeUndefined();
   expect(response.headers['vary']).toBe('Origin'); // CORS-request header
   expect(response.statusCode).toBe(200);
-  expect(response.text).toBe('Hello Cavia');
+  expect(response.text).toBe('Hello GET');
 });
