@@ -1,1 +1,1 @@
-export * from './lib/http-cors';
+export * from './http-cors';
