@@ -1,6 +1,6 @@
 {
   "name": "@caviajs/http-cors",
-  "description": "a micro framework for node.js",
+  "description": "ecosystem for your guinea pig",
   "version": "0.0.0",
   "author": "Paweł Partyka",
   "license": "MIT",
