@@ -40,7 +40,7 @@
   },
   "peerDependencies": {
     "@caviajs/http-exception": "~0.1.1",
-    "@caviajs/http-router": "~0.1.1"
+    "@caviajs/http-router": "~0.1.2"
   },
   "jest": {
     "coverageDirectory": "coverage",
