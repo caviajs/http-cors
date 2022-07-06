@@ -34,7 +34,7 @@ export const HttpCorsInterceptor: Interceptor = HttpCors.setup({
 });
 ```
 
-### Add the interceptor to the HttpRouter instance
+#### Bind the interceptor
 
 ```typescript
 httpRouter
