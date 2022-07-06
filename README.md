@@ -3,24 +3,36 @@
 <p>ecosystem for your guinea pig</p>
 </div>
 
-<div align="center">
-<h4>Installation</h4>
-</div>
+## Introduction
+
+[Cross-Origin Resource Sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) is a mechanism 
+that allows resources to be requested from another domain.
+
+## Usage
+
+### Installation
 
 ```shell
 npm install @caviajs/http-cors --save
 ```
 
-<div align="center">
-<h4>Usage</h4>
-</div>
+### Create the interceptor
 
 ```typescript
 import { HttpCors } from '@caviajs/http-cors';
 import { Interceptor } from '@caviajs/http-router';
 
-export const HttpCorsInterceptor: Interceptor = HttpCors.setup({ /* ... */ });
+export const HttpCorsInterceptor: Interceptor = HttpCors.setup({ /* 
+  'Access-Control-Allow-Credentials'?: boolean;
+  'Access-Control-Allow-Headers'?: string[];
+  'Access-Control-Allow-Methods'?: ('DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT')[];
+  'Access-Control-Allow-Origin'?: string;
+  'Access-Control-Expose-Headers'?: string[];
+  'Access-Control-Max-Age'?: number;
+*/ });
 ```
+
+### Add the interceptor to the HttpRouter instance
 
 ```typescript
 // ...
