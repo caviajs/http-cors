@@ -16,7 +16,7 @@ that allows resources to be requested from another domain.
 npm install @caviajs/http-cors --save
 ```
 
-### Create the interceptor
+### Configure the interceptor
 
 ```typescript
 import { HttpCors } from '@caviajs/http-cors';
