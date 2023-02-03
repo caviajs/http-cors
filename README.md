@@ -40,7 +40,3 @@ export const HttpCorsInterceptor: Interceptor = HttpCors.setup({
 httpRouter
   .intercept(HttpCorsInterceptor);
 ```
-
-<div align="center">
-  <sub>Built with ❤︎ by <a href="https://partyka.dev">Paweł Partyka</a></sub>
-</div>
