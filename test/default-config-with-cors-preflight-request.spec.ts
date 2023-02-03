@@ -1,6 +1,6 @@
 import http from 'http';
 import supertest from 'supertest';
-import { HttpCors, HttpRouter } from '../../src';
+import { HttpCors, HttpRouter } from '../src';
 
 it('should add CORS-preflight request headers and not execute handler (default config)', async () => {
   const httpRouter: HttpRouter = new HttpRouter();

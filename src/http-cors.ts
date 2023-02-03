@@ -1,6 +1,4 @@
 import http from 'http';
-import { Observable, of } from 'rxjs';
-import { Interceptor, Next } from '../router/http-router';
 
 function setAccessControlAllowCredentials(response: http.ServerResponse, options: CorsOptions): void {
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Credentials
@@ -70,35 +68,29 @@ function setVary(response: http.ServerResponse): void {
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 export class HttpCors {
-  public static setup(options: CorsOptions = {}): Interceptor {
-    return async (request: http.IncomingMessage, response: http.ServerResponse, next: Next): Promise<Observable<any>> => {
-      setVary(response);
+  public static setup(request: http.IncomingMessage, response: http.ServerResponse, options: CorsOptions = {}): void {
+    setVary(response);
 
-      if (request.method === 'OPTIONS') {
-        // This is a CORS-preflight request - https://fetch.spec.whatwg.org/#cors-preflight-request
+    if (request.method === 'OPTIONS') {
+      // This is a CORS-preflight request - https://fetch.spec.whatwg.org/#cors-preflight-request
 
-        setAccessControlAllowCredentials(response, options);
-        setAccessControlAllowHeaders(request, response, options);
-        setAccessControlAllowMethods(response, options);
-        setAccessControlAllowOrigin(request, response, options);
-        setAccessControlExposeHeaders(response, options);
-        setAccessControlMaxAge(response, options);
+      setAccessControlAllowCredentials(response, options);
+      setAccessControlAllowHeaders(request, response, options);
+      setAccessControlAllowMethods(response, options);
+      setAccessControlAllowOrigin(request, response, options);
+      setAccessControlExposeHeaders(response, options);
+      setAccessControlMaxAge(response, options);
 
-        // A successful HTTP response to a CORS-preflight request is similar,
-        // except it is restricted to an ok status, e.g., 200 or 204.
-        response.statusCode = 204;
+      // A successful HTTP response to a CORS-preflight request is similar,
+      // except it is restricted to an ok status, e.g., 200 or 204.
+      response.statusCode = 204;
+    } else {
+      // This is a CORS request - https://fetch.spec.whatwg.org/#cors-request
 
-        return of(undefined);
-      } else {
-        // This is a CORS request - https://fetch.spec.whatwg.org/#cors-request
-
-        setAccessControlAllowCredentials(response, options);
-        setAccessControlAllowOrigin(request, response, options);
-        setAccessControlExposeHeaders(response, options);
-
-        return next.handle();
-      }
-    };
+      setAccessControlAllowCredentials(response, options);
+      setAccessControlAllowOrigin(request, response, options);
+      setAccessControlExposeHeaders(response, options);
+    }
   }
 }
 

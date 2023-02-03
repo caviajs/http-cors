@@ -1,8 +1,8 @@
 import http from 'http';
 import supertest from 'supertest';
-import { HttpCors, HttpRouter } from '../../src';
+import { HttpCors, HttpRouter } from '../src';
 
-it('should add CORS-preflight request headers and not execute handler (custom config)', async () => {
+it('should add CORS-request headers and execute handler (custom config)', async () => {
   const httpRouter: HttpRouter = new HttpRouter();
 
   httpRouter
@@ -22,19 +22,19 @@ it('should add CORS-preflight request headers and not execute handler (custom co
   });
 
   const response = await supertest(httpServer)
-    // CORS-preflight request
-    .options('/')
+    // CORS-request
+    .get('/')
     .set('Origin', 'https://caviajs.com')
     .set('Access-Control-Request-Headers', 'Z-Foo, Z-Bar')
     .set('Access-Control-Request-Method', 'PUT');
 
   expect(response.headers['access-control-allow-credentials']).toBe('true');
-  expect(response.headers['access-control-allow-headers']).toBe('X-Foo, X-Bar');
-  expect(response.headers['access-control-allow-methods']).toBe('GET, POST');
+  expect(response.headers['access-control-allow-headers']).toBeUndefined();
+  expect(response.headers['access-control-allow-methods']).toBeUndefined();
   expect(response.headers['access-control-allow-origin']).toBe('*');
   expect(response.headers['access-control-expose-headers']).toBe('Y-Foo, Y-Bar');
-  expect(response.headers['access-control-max-age']).toBe('500');
+  expect(response.headers['access-control-max-age']).toBeUndefined();
   expect(response.headers['vary']).toBe('Origin');
-  expect(response.statusCode).toBe(204);
-  expect(response.text).toBe('');
+  expect(response.statusCode).toBe(200);
+  expect(response.text).toBe('Hello GET');
 });
