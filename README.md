@@ -22,21 +22,25 @@ npm install @caviajs/http-cors --save
 import { HttpCors } from '@caviajs/http-cors';
 import { Interceptor } from '@caviajs/http-router';
 
-export const HttpCorsInterceptor: Interceptor = HttpCors.setup({
-  /* 
-    'Access-Control-Allow-Credentials'?: boolean;
-    'Access-Control-Allow-Headers'?: string[];
-    'Access-Control-Allow-Methods'?: ('DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT')[];
-    'Access-Control-Allow-Origin'?: string;
-    'Access-Control-Expose-Headers'?: string[];
-    'Access-Control-Max-Age'?: number;
-  */
-});
+export const CorsInterceptor: Interceptor = (request, response, next) => {
+  HttpCors.setup(request, response, {
+    /*
+      'Access-Control-Allow-Credentials'?: boolean;
+      'Access-Control-Allow-Headers'?: string[];
+      'Access-Control-Allow-Methods'?: ('DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT')[];
+      'Access-Control-Allow-Origin'?: string;
+      'Access-Control-Expose-Headers'?: string[];
+      'Access-Control-Max-Age'?: number;
+    */
+  });
+
+  return next.handle();
+};
 ```
 
 ### Bind the interceptor
 
 ```typescript
 httpRouter
-  .intercept(HttpCorsInterceptor);
+  .intercept(CorsInterceptor);
 ```
