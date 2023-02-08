@@ -1,12 +1,18 @@
 import http from 'http';
 import supertest from 'supertest';
 import { HttpCors } from '../src';
+import { HttpRouter } from '@caviajs/http-router';
 
 it('should add CORS-request headers and execute handler (default config)', async () => {
-  const httpServer: http.Server = http.createServer((request, response) => {
-    HttpCors.setup(request, response, {});
+  const httpRouter: HttpRouter = new HttpRouter();
 
-    response.end('Hello GET');
+  httpRouter
+    .intercept(HttpCors.setup())
+    .route({ handler: () => 'Hello GET', method: 'GET', path: '/' })
+    .route({ handler: () => 'Hello OPTIONS', method: 'OPTIONS', path: '/' });
+
+  const httpServer: http.Server = http.createServer((request, response) => {
+    httpRouter.handle(request, response);
   });
 
   const response = await supertest(httpServer)
@@ -25,10 +31,15 @@ it('should add CORS-request headers and execute handler (default config)', async
 });
 
 it('should add CORS-request headers and execute handler (default config) - reflection', async () => {
-  const httpServer: http.Server = http.createServer((request, response) => {
-    HttpCors.setup(request, response, {});
+  const httpRouter: HttpRouter = new HttpRouter();
 
-    response.end('Hello GET');
+  httpRouter
+    .intercept(HttpCors.setup())
+    .route({ handler: () => 'Hello GET', method: 'GET', path: '/' })
+    .route({ handler: () => 'Hello OPTIONS', method: 'OPTIONS', path: '/' });
+
+  const httpServer: http.Server = http.createServer((request, response) => {
+    httpRouter.handle(request, response);
   });
 
   const response = await supertest(httpServer)

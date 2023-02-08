@@ -1,19 +1,25 @@
 import http from 'http';
 import supertest from 'supertest';
 import { HttpCors } from '../src';
+import { HttpRouter } from '@caviajs/http-router';
 
 it('should add CORS-preflight request headers and not execute handler (custom config)', async () => {
-  const httpServer: http.Server = http.createServer((request, response) => {
-    HttpCors.setup(request, response, {
+  const httpRouter: HttpRouter = new HttpRouter();
+
+  httpRouter
+    .intercept(HttpCors.setup({
       'Access-Control-Allow-Credentials': true,
       'Access-Control-Allow-Headers': ['X-Foo', 'X-Bar'],
       'Access-Control-Allow-Methods': ['GET', 'POST'],
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Expose-Headers': ['Y-Foo', 'Y-Bar'],
       'Access-Control-Max-Age': 500,
-    });
+    }))
+    .route({ handler: () => 'Hello GET', method: 'GET', path: '/' })
+    .route({ handler: () => 'Hello OPTIONS', method: 'OPTIONS', path: '/' });
 
-    response.end();
+  const httpServer: http.Server = http.createServer((request, response) => {
+    httpRouter.handle(request, response);
   });
 
   const response = await supertest(httpServer)
