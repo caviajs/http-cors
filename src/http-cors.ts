@@ -70,19 +70,27 @@ function setVary(response: http.ServerResponse): void {
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 export class HttpCors {
-  public static setup(options: CorsOptions = {}): Interceptor {
-    return (request: http.IncomingMessage, response: http.ServerResponse, next: Next) => {
+  public static setup(options: CorsBuilder | CorsOptions = {}): Interceptor {
+    return async (request: http.IncomingMessage, response: http.ServerResponse, next: Next) => {
       setVary(response);
 
       if (request.method === 'OPTIONS') {
         // This is a CORS-preflight request - https://fetch.spec.whatwg.org/#cors-preflight-request
 
-        setAccessControlAllowCredentials(response, options);
-        setAccessControlAllowHeaders(request, response, options);
-        setAccessControlAllowMethods(response, options);
-        setAccessControlAllowOrigin(request, response, options);
-        setAccessControlExposeHeaders(response, options);
-        setAccessControlMaxAge(response, options);
+        let corsOptions: CorsOptions;
+
+        if (typeof options === 'function') {
+          corsOptions = await options(request);
+        } else {
+          corsOptions = options;
+        }
+
+        setAccessControlAllowCredentials(response, corsOptions);
+        setAccessControlAllowHeaders(request, response, corsOptions);
+        setAccessControlAllowMethods(response, corsOptions);
+        setAccessControlAllowOrigin(request, response, corsOptions);
+        setAccessControlExposeHeaders(response, corsOptions);
+        setAccessControlMaxAge(response, corsOptions);
 
         // A successful HTTP response to a CORS-preflight request is similar,
         // except it is restricted to an ok status, e.g., 200 or 204.
@@ -92,14 +100,26 @@ export class HttpCors {
       } else {
         // This is a CORS request - https://fetch.spec.whatwg.org/#cors-request
 
-        setAccessControlAllowCredentials(response, options);
-        setAccessControlAllowOrigin(request, response, options);
-        setAccessControlExposeHeaders(response, options);
+        let corsOptions: CorsOptions
+
+        if (typeof options === 'function') {
+          corsOptions = await options(request);
+        } else {
+          corsOptions = options;
+        }
+
+        setAccessControlAllowCredentials(response, corsOptions);
+        setAccessControlAllowOrigin(request, response, corsOptions);
+        setAccessControlExposeHeaders(response, corsOptions);
 
         return next.handle();
       }
     };
   }
+}
+
+export interface CorsBuilder {
+  (request: http.IncomingMessage): CorsOptions | Promise<CorsOptions>;
 }
 
 export interface CorsOptions {
