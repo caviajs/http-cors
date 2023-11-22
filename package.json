@@ -26,7 +26,7 @@
   },
   "devDependencies": {
     "@caviajs/http-exception": "^1.0.5",
-    "@caviajs/http-router": "^1.2.2",
+    "@caviajs/http-router": "^1.2.3",
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
     "@release-it/conventional-changelog": "^8.0.1",
