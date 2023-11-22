@@ -1,7 +1,7 @@
 {
   "name": "@caviajs/http-cors",
   "description": "a micro framework for node.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Paweł Partyka",
   "license": "MIT",
   "repository": "caviajs/http-cors",
